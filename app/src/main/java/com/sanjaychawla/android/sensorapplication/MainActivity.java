@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int UPDATE_INTERVAL = 20000;
     private static final long MAX_WAIT_TIME = UPDATE_INTERVAL * 5;
+    public static final int SMALLEST_DISPLACEMENT = 10;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(30000);
         locationRequest.setMaxWaitTime(MAX_WAIT_TIME);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
         return locationRequest;
     }
 }
