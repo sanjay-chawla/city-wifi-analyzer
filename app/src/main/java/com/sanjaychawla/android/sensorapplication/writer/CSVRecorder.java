@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.opencsv.CSVWriter;
+import com.sanjaychawla.android.sensorapplication.DataObject.Record;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,7 +14,7 @@ import java.util.Calendar;
 
 public class CSVRecorder {
 
-    public static void write(String path, double latitude, double longitude, String networkType, double connectionSpeed) {
+    public static void write(String path, Record record) {
         String fileName = "AnalysisData.csv";
         String filePath = path + File.separator + fileName;
         Log.d("CSVWriter", "path: " + filePath);
@@ -29,17 +30,19 @@ public class CSVRecorder {
                     String[] header = {"Timestamp", "Latitude", "Longitude", "NetworkType", "NetworkSpeed"};
                     writer.writeNext(header);
                 }
-                String[] data = {getCurrentTime(), Double.toString(latitude), Double.toString(longitude), networkType, Double.toString(connectionSpeed)};
+                String[] data = {
+                        record.getTimestamp(),
+                        Double.toString(record.getLatitude()),
+                        Double.toString(record.getLongitude()),
+                        record.getNetworkType(),
+                        Double.toString(record.getNetworkSpeed())
+                };
                 writer.writeNext(data);
                 writer.close();
             }catch (IOException ioException){
                 Log.e("CSVRecorder", "IOException in write(): " + ioException.getMessage());
             }
         }
-    }
-
-    private static String getCurrentTime() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 
     private static boolean checkRWAccess() {

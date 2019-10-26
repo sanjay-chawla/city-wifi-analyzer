@@ -6,20 +6,17 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.google.android.gms.location.LocationResult;
 import com.sanjaychawla.android.sensorapplication.helper.InternetSpeedHelper;
-import com.sanjaychawla.android.sensorapplication.writer.CSVRecorder;
 
 import java.util.List;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
-    public static final String ACTION_PROCESS_UPDATES =
-            "com.sanjaychawla.android.sensorapplication.LocationUpdatesBroadcastReceiver.PROCESS_UPDATES";
-    private static final String TAG = "LUBroadcastReceiver";
+    public static final String ACTION_PROCESS_UPDATES = "com.sanjaychawla.android.sensorapplication.LocationUpdatesBroadcastReceiver.PROCESS_UPDATES";
+    private static final String TAG = "LocationUpdatesBroadcastReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -30,10 +27,9 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
                 if (result != null) {
                     List<Location> locations = result.getLocations();
                     for (Location location : locations) {
-                        String networkType = getNetworkInformation(context);
-                        double connectionSpeed = new InternetSpeedHelper().calculateSpeed();
-                        Log.d(TAG, "here you go: latitude: " + location.getLatitude() + " network type: " + networkType);
-                        CSVRecorder.write(context.getExternalFilesDir(null).getAbsolutePath(), location.getLatitude(), location.getLongitude(), networkType, connectionSpeed);
+                        new InternetSpeedHelper().calculateSpeed(location,
+                                context.getExternalFilesDir(null).getAbsolutePath(),
+                                getNetworkInformation(context));
                     }
                 }
             }
@@ -41,11 +37,11 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     }
 
     private String getNetworkInformation(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-        if(info.getType() == ConnectivityManager.TYPE_WIFI){
+        if (info.getType() == ConnectivityManager.TYPE_WIFI) {
             return "WIFI";
-        } else if(info.getType() == ConnectivityManager.TYPE_MOBILE){
+        } else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
             return info.getSubtypeName();
         } else {
             return "UNKNOWN";

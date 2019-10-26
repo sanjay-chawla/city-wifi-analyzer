@@ -1,10 +1,17 @@
 package com.sanjaychawla.android.sensorapplication.helper;
 
+import android.location.Location;
 import android.util.Log;
+
+import com.sanjaychawla.android.sensorapplication.DataObject.Record;
+import com.sanjaychawla.android.sensorapplication.writer.CSVRecorder;
+import com.sanjaychawla.android.sensorapplication.writer.FirebaseDBRecorder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -16,88 +23,70 @@ import okhttp3.Response;
 public class InternetSpeedHelper {
     public static final String TAG = InternetSpeedHelper.class.getSimpleName();
     // bandwidth in kbps
-    private int POOR_BANDWIDTH = 150;
+    static private int POOR_BANDWIDTH = 150;
     private int AVERAGE_BANDWIDTH = 550;
     private int GOOD_BANDWIDTH = 2000;
 
-    OkHttpClient client = new OkHttpClient();
-    Request request = new Request.Builder()
+    static OkHttpClient client = new OkHttpClient();
+    static Request request = new Request.Builder()
             .url("https://b.zmtcdn.com/data/user_profile_pictures/3be/8d1eff0f14f4c5e2d4de16f08151e3be.jpg?fit=around%7C400%3A400&crop=400%3A400%3B%2A%2C%2A")
             .build();
-    Call imageCall = client.newCall(request);
 
-    public double calculateSpeed(){
+    public static double calculateSpeed(Location location, String filepath, String networkType){
         Log.d(TAG, "inside speed calculator");
-        CustomImageCallback cb = new CustomImageCallback();
-        imageCall.enqueue(cb);
-        Log.d(TAG, "complete flag: " + cb.complete);
-        while(!cb.complete){
-            Log.d(TAG, "waiting");
-        }
-        Log.d(TAG, "Download Speed bahar: " + cb.speed + " kbps");
+        CustomImageCallback cb = new CustomImageCallback(location, filepath, networkType);
+        client.newCall(request).enqueue(cb);
         return cb.speed;
     }
 
-    private class CustomImageCallback implements Callback {
+    private static class CustomImageCallback implements Callback {
         long endTime;
         long fileSize;
         double speed;
         long startTime;
-        boolean complete;
+        Location location;
+        String filepath;
+        String networkType;
 
-        public CustomImageCallback() {
-            complete = false;
+        public CustomImageCallback(Location location, String filepath, String networkType) {
             startTime = System.currentTimeMillis();
+            this.location = location;
+            this.filepath = filepath;
+            this.networkType = networkType;
         }
 
         @Override
         public void onFailure(Call call, IOException e) {
             e.printStackTrace();
-            complete = true;
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
             Headers responseHeaders = response.headers();
-            for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                Log.d(TAG, responseHeaders.name(i) + ": " + responseHeaders.value(i));
-            }
-
             InputStream input = response.body().byteStream();
-
             try {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
-
                 while (input.read(buffer) != -1) {
                     bos.write(buffer);
                 }
                 byte[] docBuffer = bos.toByteArray();
                 fileSize = bos.size();
-
             } finally {
                 input.close();
             }
-
             endTime = System.currentTimeMillis();
-
-
-            // calculate how long it took by subtracting endtime from starttime
-
             double timeTakenMills = Math.floor(endTime - startTime);  // time taken in milliseconds
-            double timeTakenSecs = timeTakenMills / 1000;  // divide by 1000 to get time in seconds
-            final int kilobytePerSec = (int) Math.round(1024 / timeTakenSecs);
-
-            if(kilobytePerSec <= POOR_BANDWIDTH){
-                // slow connection
-            }
-
-            // get the download speed by dividing the file size by time taken to download
             speed = fileSize / timeTakenMills;
-            Log.d(TAG, "start time: " + startTime);
-            Log.d(TAG, "Download Speed: " + speed + " kbps and complete flag: " + complete);
-            complete = true;
+
+            Record record = new Record(getCurrentTime(), location.getLatitude(), location.getLongitude(), networkType, speed);
+            CSVRecorder.write(filepath, record);
+            FirebaseDBRecorder.write(record);
+        }
+
+        private static String getCurrentTime() {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
         }
     }
 }
