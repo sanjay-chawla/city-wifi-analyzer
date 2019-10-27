@@ -1,15 +1,18 @@
-package com.sanjaychawla.android.sensorapplication.DataObject;
+package com.sanjaychawla.android.sensorapplication.data;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Record {
-    // TODO: add some ID field
     private String timestamp;
     private double latitude;
     private double longitude;
     private String networkType;
     private double networkSpeed;
+    private boolean wifiRecognised;
+    private String ssid;
+    private float distanceFromRouter;
+    private int wiFiStrength;
 
     public Record(){}
 
@@ -59,6 +62,38 @@ public class Record {
 
     public void setNetworkSpeed(double networkSpeed) {
         this.networkSpeed = networkSpeed;
+    }
+
+    public boolean isWifiRecognised() {
+        return wifiRecognised;
+    }
+
+    public void setWifiRecognised(boolean wifiRecognised) {
+        this.wifiRecognised = wifiRecognised;
+    }
+
+    public String getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
+    }
+
+    public float getDistanceFromRouter() {
+        return distanceFromRouter;
+    }
+
+    public void setDistanceFromRouter(float distanceFromRouter) {
+        this.distanceFromRouter = distanceFromRouter;
+    }
+
+    public int getWiFiStrength() {
+        return wiFiStrength;
+    }
+
+    public void setWiFiStrength(int wiFiStrength) {
+        this.wiFiStrength = wiFiStrength;
     }
 
     @Override

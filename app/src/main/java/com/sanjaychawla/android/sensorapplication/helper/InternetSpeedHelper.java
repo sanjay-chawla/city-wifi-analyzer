@@ -3,7 +3,7 @@ package com.sanjaychawla.android.sensorapplication.helper;
 import android.location.Location;
 import android.util.Log;
 
-import com.sanjaychawla.android.sensorapplication.DataObject.Record;
+import com.sanjaychawla.android.sensorapplication.data.Record;
 import com.sanjaychawla.android.sensorapplication.writer.CSVRecorder;
 import com.sanjaychawla.android.sensorapplication.writer.FirebaseDBRecorder;
 
@@ -32,9 +32,9 @@ public class InternetSpeedHelper {
             .url("https://b.zmtcdn.com/data/user_profile_pictures/3be/8d1eff0f14f4c5e2d4de16f08151e3be.jpg?fit=around%7C400%3A400&crop=400%3A400%3B%2A%2C%2A")
             .build();
 
-    public static double calculateSpeed(Location location, String filepath, String networkType){
+    public static double calculateSpeed(Record record, String filepath){
         Log.d(TAG, "inside speed calculator");
-        CustomImageCallback cb = new CustomImageCallback(location, filepath, networkType);
+        CustomImageCallback cb = new CustomImageCallback(record, filepath);
         client.newCall(request).enqueue(cb);
         return cb.speed;
     }
@@ -44,20 +44,22 @@ public class InternetSpeedHelper {
         long fileSize;
         double speed;
         long startTime;
-        Location location;
         String filepath;
-        String networkType;
+        Record record;
 
-        public CustomImageCallback(Location location, String filepath, String networkType) {
+        public CustomImageCallback(Record record, String filepath) {
             startTime = System.currentTimeMillis();
-            this.location = location;
+            this.record = record;
             this.filepath = filepath;
-            this.networkType = networkType;
         }
 
         @Override
         public void onFailure(Call call, IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error in HTTP call: " + e.getMessage());
+            record.setNetworkSpeed(speed);
+            record.setTimestamp(getCurrentTime());
+            CSVRecorder.write(filepath, record);
+            FirebaseDBRecorder.write(record);
         }
 
         @Override
@@ -79,8 +81,8 @@ public class InternetSpeedHelper {
             endTime = System.currentTimeMillis();
             double timeTakenMills = Math.floor(endTime - startTime);  // time taken in milliseconds
             speed = fileSize / timeTakenMills;
-
-            Record record = new Record(getCurrentTime(), location.getLatitude(), location.getLongitude(), networkType, speed);
+            record.setNetworkSpeed(speed);
+            record.setTimestamp(getCurrentTime());
             CSVRecorder.write(filepath, record);
             FirebaseDBRecorder.write(record);
         }

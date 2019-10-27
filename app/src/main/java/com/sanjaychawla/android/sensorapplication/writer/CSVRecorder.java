@@ -4,13 +4,11 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.opencsv.CSVWriter;
-import com.sanjaychawla.android.sensorapplication.DataObject.Record;
+import com.sanjaychawla.android.sensorapplication.data.Record;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class CSVRecorder {
 
