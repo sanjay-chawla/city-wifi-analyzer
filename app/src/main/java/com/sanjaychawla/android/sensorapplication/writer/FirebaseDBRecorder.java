@@ -4,6 +4,9 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,7 +25,7 @@ public class FirebaseDBRecorder {
     }
 
     public static void recogniseWiFi(final Context context, final Record record, final CustomCallback callback){
-        db.collection("/hotspots/ny/03292017")
+        db.collectionGroup("03292017")
             .whereEqualTo("SSID", record.getSsid())
             .get()
             .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -32,18 +35,30 @@ public class FirebaseDBRecorder {
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                         double routerLatitude = documentSnapshot.getDouble("LAT");
                         double routerLongitude = documentSnapshot.getDouble("LON");
-                        float[] result = new float[3];
-                        Location.distanceBetween(record.getLatitude(), record.getLongitude(),
-                                routerLatitude, routerLongitude, result);
-                        Log.d(TAG, "Distance : " + result[0]);
-                        if(result[0] < 150){
+                        if(((Double) routerLatitude) != null && ((Double) routerLongitude) != null){
                             Log.d(TAG, "match found in ID: " + documentSnapshot.getId());
-                            record.setDistanceFromRouter(result[0]);
+                            float[] result = new float[3];
+                            Location.distanceBetween(record.getLatitude(), record.getLongitude(),
+                                    routerLatitude, routerLongitude, result);
+                            Log.d(TAG, "Distance : " + result[0]);
+                            if(result[0] < 150) {
+                                record.setDistanceFromRouter(result[0]);
+                                record.setWifiRecognised(true);
+                            }
+                            break;
+                        } else {
+                            record.setDistanceFromRouter(9999999);
                             record.setWifiRecognised(true);
                             break;
                         }
                     }
                     callback.onCallback(context, record);
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "Failure in read: " + e.getMessage());
                 }
             })
         ;
