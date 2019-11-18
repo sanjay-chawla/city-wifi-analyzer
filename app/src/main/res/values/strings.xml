@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SensorApplication</string>
-
+    <string name="hotspots">HOTSPOTS</string>
+    <string name="networks">NETWORKS</string>
+    <string name="hide">HIDE</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoic2FuamF5Y2hhd2xhIiwiYSI6ImNrMnR3NDJpeTFicGUzbm80dnhjeGJnNXkifQ.jQZ4qTUeohs9l08WMfl7Hw</string>
 </resources>
