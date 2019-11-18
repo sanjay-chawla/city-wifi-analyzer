@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SensorApplication</string>
+    <string name="app_name">City WiFi Analyzer</string>
     <string name="hotspots">HOTSPOTS</string>
     <string name="networks">NETWORKS</string>
     <string name="hide">HIDE</string>
