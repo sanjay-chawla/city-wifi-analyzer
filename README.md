@@ -4,5 +4,5 @@ Smart connectivity is the focus of many urban cities, growing very day by the in
 ## Data Visualization
 [MapBox](https://www.mapbox.com) Android SDK has been used for visualisations. It is an open-source tool with extensive documentation and many out-of-the-box tools for excellent visualisations. Data for all visualisations are taken in real-time from Firestore DB.
 ## Screenshots
-![Hotspots](https://photos.google.com/share/AF1QipN0u2RY0Z12qsDfTpRwILfV2XiyQnJVwOU0yA8Cb07oI_U_BU5dnDrk831A2s1bqA/photo/AF1QipPyJtZVg7U-v2vgEA7cAL5AUOK4WznZQVav3_Yg?key=LXlRUWJUUTVqUjlQWTEzakFDbXZ6UWc0OGc2cEVB)
-![Markers](https://photos.google.com/share/AF1QipN0u2RY0Z12qsDfTpRwILfV2XiyQnJVwOU0yA8Cb07oI_U_BU5dnDrk831A2s1bqA/photo/AF1QipPaqxze10Sod1lYJfFSLja9UmcXx8s3nihwvm0h?key=LXlRUWJUUTVqUjlQWTEzakFDbXZ6UWc0OGc2cEVB)
+![Hotspots](https://lh3.googleusercontent.com/J9AedyVQkzRhiqYc0OtsPMPZ-nJ-XfxOiWBK7iqxXCSnRHoV8nKhCVOZB8v6975aFXIkr6xofobT3I9YnLF4qQuOND2_nUWBkdT09vOlXZjThEDv7G-bc7UEjISk03k7I_k5cL48=w285-h556-no)
+![Markers](https://lh3.googleusercontent.com/eiXYNTj-nDbqBaFuwnAAPcN98_3TACuqd9T_1ePe8aVli8jQpIVawToFvjhQAbwvD7CYTGUi3o5kRl8TidZyB6TOr2yrK_h4BrCoDJ82bfXR76qO5MfoitlFcmgh4D6XxQLzRywe=w285-h556-no)
